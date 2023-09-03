@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
         const chosenColor = colorPicker.value;
+
+        console.log(`Canvas clicked at (${x}, ${y}) with chosen color: ${chosenColor}`);
         
         floodFill(canvas, x, y, hexToRgba(chosenColor));
     });
@@ -35,7 +37,9 @@ function hexToRgba(hex) {
         g = parseInt(hex.slice(3, 5), 16),
         b = parseInt(hex.slice(5, 7), 16);
 
-    return [r, g, b, 255];  // assuming full opacity
+    console.log(`Converted hex ${hex} to rgba: [${r}, ${g}, ${b}, 255]`);
+
+    return [r, g, b, 255];
 }
 
 function floodFill(canvas, x, y, newColor) {
@@ -45,7 +49,10 @@ function floodFill(canvas, x, y, newColor) {
     const targetColor = getColorAtPixel(imageData, x, y);
     const visited = new Set();
     
+    console.log(`Target color at (${x}, ${y}):`, targetColor);
+
     if (colorsMatch(targetColor, newColor)) {
+        console.log('Target color matches the new color. Exiting flood fill.');
         return;
     }
 
