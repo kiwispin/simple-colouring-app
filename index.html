@@ -9,23 +9,21 @@
 </head>
 <body>
     <div class="toolbar">
-        <input type="file" id="imageUpload" class="file-input" accept="image/*">
-        <label for="imageUpload" class="file-label">Load Image</label>
+        <div id="upload-container">
+            <label id="upload-label" for="imageUpload">Load Image</label>
+            <input type="file" id="imageUpload" accept="image/*" />
+        </div>
         <div id="color-container">
-            <div class="color-box" data-color="#FF0000" style="background-color: #FF0000;"></div>
-            <div class="color-box" data-color="#FF7F00" style="background-color: #FF7F00;"></div>
-            <div class="color-box" data-color="#FFFF00" style="background-color: #FFFF00;"></div>
-            <div class="color-box" data-color="#7FFF00" style="background-color: #7FFF00;"></div>
-            <div class="color-box" data-color="#00FF00" style="background-color: #00FF00;"></div>
-            <div class="color-box" data-color="#00FF7F" style="background-color: #00FF7F;"></div>
-            <div class="color-box" data-color="#00FFFF" style="background-color: #00FFFF;"></div>
-            <div class="color-box" data-color="#007FFF" style="background-color: #007FFF;"></div>
-            <div class="color-box" data-color="#0000FF" style="background-color: #0000FF;"></div>
-            <div class="color-box" data-color="#7F00FF" style="background-color: #7F00FF;"></div>
-            <div class="color-box" data-color="#FF00FF" style="background-color: #FF00FF;"></div>
-            <div class="color-box" data-color="#FF007F" style="background-color: #FF007F;"></div>
-            <div class="color-box" data-color="#000000" style="background-color: #000000;"></div>
-            <div class="color-box custom-color" style="background-color: #FFFFFF;"></div>
+            <div class="color-box" style="background-color: red;" onclick="setColor('red')"></div>
+            <div class="color-box" style="background-color: blue;" onclick="setColor('blue')"></div>
+            <div class="color-box" style="background-color: green;" onclick="setColor('green')"></div>
+            <div class="color-box" style="background-color: yellow;" onclick="setColor('yellow')"></div>
+            <div class="color-box" style="background-color: orange;" onclick="setColor('orange')"></div>
+            <div class="color-box" style="background-color: purple;" onclick="setColor('purple')"></div>
+            <div class="color-box" style="background-color: brown;" onclick="setColor('brown')"></div>
+            <div class="color-box" style="background-color: pink;" onclick="setColor('pink')"></div>
+            <div class="color-box" style="background-color: black;" onclick="setColor('black')"></div>
+            <div class="color-box" style="background-color: white;" onclick="setColor('white')"></div>
         </div>
     </div>
     <canvas id="canvas"></canvas>

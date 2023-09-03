@@ -20,28 +20,6 @@ body {
     gap: 10px;
 }
 
-.file-input-container {
-    position: relative;
-    overflow: hidden;
-    display: inline-block;
-}
-
-.file-input-container label {
-    background-color: #4CAF50;
-    border-radius: 4px;
-    color: white;
-    padding: 10px 20px;
-    cursor: pointer;
-}
-
-.file-input {
-    position: absolute;
-    left: 0;
-    top: 0;
-    opacity: 0;
-    cursor: pointer;
-}
-
 #color-container {
     display: flex;
     gap: 10px;
@@ -63,4 +41,29 @@ canvas {
     border: 1px solid #000;
     margin-top: 20px;
     background-color: white;
+}
+
+#upload-container {
+    display: inline-block;
+    position: relative;
+    margin: 10px;
+    padding: 5px 10px;
+    border: 1px solid #000;
+    background-color: #FFF;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+
+#upload-container:hover {
+    background-color: #EEE;
+}
+
+#imageUpload {
+    display: none;
+}
+
+#upload-label {
+    display: inline-block;
+    vertical-align: middle;
 }
