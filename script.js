@@ -12,9 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
             reader.onload = function(event) {
                 const img = new Image();
                 img.onload = function() {
-                    const aspectRatio = img.width / img.height;
-                    canvas.width = canvas.height * aspectRatio;
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
                 }
                 img.src = event.target.result;
             }
@@ -29,9 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const chosenColor = colorPicker.value;
 
         console.log(`Canvas clicked at (${x}, ${y}) with chosen color: ${chosenColor}`);
-        
         const rgbaColor = hexToRgba(chosenColor);
-        console.log(`Converted hex ${chosenColor} to rgba:`, rgbaColor);
+        console.log('Converted hex', chosenColor, 'to rgba:', rgbaColor);
 
         floodFill(canvas, x, y, rgbaColor);
     });
@@ -50,9 +49,9 @@ function floodFill(canvas, x, y, newColor) {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
     const targetColor = getColorAtPixel(imageData, x, y);
-
-    console.log(`Target color at (${x}, ${y}):`, targetColor);
     
+    console.log('Target color at', `(${x}, ${y}):`, targetColor);
+
     if (colorsMatch(targetColor, newColor)) {
         return;
     }
@@ -62,7 +61,7 @@ function floodFill(canvas, x, y, newColor) {
 
     while (pixels.length) {
         const [currentX, currentY] = pixels.pop();
-        const currentIndex = (currentY * canvas.width + currentX) * 4;
+        const currentIndex = (Math.floor(currentY) * canvas.width + Math.floor(currentX)) * 4;
 
         if (visited.has(currentIndex)) continue;
         visited.add(currentIndex);
@@ -74,7 +73,6 @@ function floodFill(canvas, x, y, newColor) {
             data[currentIndex + 2] = newColor[2];
             data[currentIndex + 3] = newColor[3];
 
-            // Check neighboring pixels
             if (currentX > 0) pixels.push([currentX - 1, currentY]);
             if (currentX < canvas.width - 1) pixels.push([currentX + 1, currentY]);
             if (currentY > 0) pixels.push([currentX, currentY - 1]);
@@ -87,13 +85,18 @@ function floodFill(canvas, x, y, newColor) {
 
 function getColorAtPixel(imageData, x, y) {
     const {width, data} = imageData;
-    const index = (y * width + x) * 4;
+    const intX = Math.floor(x);
+    const intY = Math.floor(y);
+    const index = (intY * width + intX) * 4;
+
+    console.log(`Fetching color for x=${x}, y=${y}. Using intX=${intX}, intY=${intY}, Index=${index}`);
+    
     return [data[index], data[index + 1], data[index + 2], data[index + 3]];
 }
 
 function colorsMatch(a, b, tolerance = 10) {
-    if (!a || !b) return false;  // Ensure that the colors are valid.
-    return Math.abs(a[0] - b[0]) <= tolerance &&
-           Math.abs(a[1] - b[1]) <= tolerance &&
-           Math.abs(a[2] - b[2]) <= tolerance;
+    for (let i = 0; i < a.length; i++) {
+        if (Math.abs(a[i] - b[i]) > tolerance) return false;
+    }
+    return true;
 }
