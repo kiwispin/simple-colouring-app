@@ -5,25 +5,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageUpload = document.getElementById('imageUpload');
 
     imageUpload.addEventListener('change', function() {
-        if (this.files && this.files.length > 0) {
-            const file = this.files[0];
-            const reader = new FileReader();
+        const file = this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
 
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
-                    ctx.drawImage(img, 0, 0);
-                }
-                img.src = event.target.result;
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
             }
-            reader.readAsDataURL(file);
+            img.src = event.target.result;
         }
+        reader.readAsDataURL(file);
     });
 
     canvas.addEventListener('click', function(event) {
         const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
+        const x = Math.round(event.clientX - rect.left);
+        const y = Math.round(event.clientY - rect.top);
         const chosenColor = colorPicker.value;
 
         console.log(`Canvas clicked at (${x}, ${y}) with chosen color: ${chosenColor}`);
@@ -38,8 +38,7 @@ function hexToRgba(hex) {
         b = parseInt(hex.slice(5, 7), 16);
 
     console.log(`Converted hex ${hex} to rgba: [${r}, ${g}, ${b}, 255]`);
-
-    return [r, g, b, 255];
+    return [r, g, b, 255];  // assuming full opacity
 }
 
 function floodFill(canvas, x, y, newColor) {
@@ -47,12 +46,10 @@ function floodFill(canvas, x, y, newColor) {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
     const targetColor = getColorAtPixel(imageData, x, y);
-    const visited = new Set();
-    
     console.log(`Target color at (${x}, ${y}):`, targetColor);
+    const visited = new Set();
 
     if (colorsMatch(targetColor, newColor)) {
-        console.log('Target color matches the new color. Exiting flood fill.');
         return;
     }
 
