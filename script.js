@@ -6,28 +6,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     imageUpload.addEventListener('change', function() {
         const file = this.files[0];
-        if (!file) return;
-        const reader = new FileReader();
+        if (file) {
+            const reader = new FileReader();
 
-        reader.onload = function(event) {
-            const img = new Image();
-            img.onload = function() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(img, 0, 0);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const aspectRatio = img.width / img.height;
+                    let newWidth = canvas.width;
+                    let newHeight = newWidth / aspectRatio;
+
+                    if (newHeight > canvas.height) {
+                        newHeight = canvas.height;
+                        newWidth = newHeight * aspectRatio;
+                    }
+
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, newWidth, newHeight);
+                }
+                img.src = event.target.result;
             }
-            img.src = event.target.result;
+            reader.readAsDataURL(file);
         }
-        reader.readAsDataURL(file);
     });
 
     canvas.addEventListener('click', function(event) {
         const rect = canvas.getBoundingClientRect();
-        const x = Math.round(event.clientX - rect.left);
-        const y = Math.round(event.clientY - rect.top);
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
         const chosenColor = colorPicker.value;
 
         console.log(`Canvas clicked at (${x}, ${y}) with chosen color: ${chosenColor}`);
-        
         floodFill(canvas, x, y, hexToRgba(chosenColor));
     });
 });
@@ -38,7 +47,7 @@ function hexToRgba(hex) {
         b = parseInt(hex.slice(5, 7), 16);
 
     console.log(`Converted hex ${hex} to rgba: [${r}, ${g}, ${b}, 255]`);
-    return [r, g, b, 255];  // assuming full opacity
+    return [r, g, b, 255];
 }
 
 function floodFill(canvas, x, y, newColor) {
@@ -46,14 +55,15 @@ function floodFill(canvas, x, y, newColor) {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
     const targetColor = getColorAtPixel(imageData, x, y);
+
     console.log(`Target color at (${x}, ${y}):`, targetColor);
-    const visited = new Set();
 
     if (colorsMatch(targetColor, newColor)) {
         return;
     }
 
     const pixels = [[x, y]];
+    const visited = new Set();
 
     while (pixels.length) {
         const [currentX, currentY] = pixels.pop();
