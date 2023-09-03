@@ -2,7 +2,7 @@ body {
     font-family: 'Arial', sans-serif;
     background-color: #f3f3f3;
     margin: 0;
-    overflow: auto; /* changed from hidden to auto */
+    overflow: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -18,35 +18,33 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     gap: 10px;
-    align-items: center; /* to align items vertically centered */
 }
 
-#upload-btn-wrapper {
+.file-input-container {
     position: relative;
     overflow: hidden;
     display: inline-block;
 }
 
-.btn {
-    border: 2px solid gray;
-    color: gray;
-    background-color: white;
-    padding: 8px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: bold;
+.file-input-container label {
+    background-color: #4CAF50;
+    border-radius: 4px;
+    color: white;
+    padding: 10px 20px;
     cursor: pointer;
-    display: inline-block; /* this ensures it's on the same line as other inline content */
 }
 
 .file-input {
-    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
 }
 
 #color-container {
     display: flex;
     gap: 10px;
-    align-items: center; /* to align items vertically centered */
 }
 
 .color-box {
@@ -65,5 +63,4 @@ canvas {
     border: 1px solid #000;
     margin-top: 20px;
     background-color: white;
-    max-width: 100%; /* to ensure canvas fits within the screen width */
 }
