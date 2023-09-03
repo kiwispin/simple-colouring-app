@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     canvas.addEventListener('click', function(event) {
         const rect = canvas.getBoundingClientRect();
-        const x = Math.floor(event.clientX - rect.left);
-        const y = Math.floor(event.clientY - rect.top);
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
         const chosenColor = colorPicker.value;
 
         console.log(`Canvas clicked at (${x}, ${y}) with chosen color: ${chosenColor}`);
@@ -33,6 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Converted hex', chosenColor, 'to rgba:', rgbaColor);
 
         floodFill(canvas, x, y, rgbaColor);
+    });
+
+    // Display the chosen color in the span next to the picker
+    colorPicker.addEventListener('change', function() {
+        document.getElementById('selectedColorDisplay').style.backgroundColor = this.value;
     });
 });
 
@@ -61,7 +66,7 @@ function floodFill(canvas, x, y, newColor) {
 
     while (pixels.length) {
         const [currentX, currentY] = pixels.pop();
-        const currentIndex = (currentY * canvas.width + currentX) * 4;
+        const currentIndex = (Math.floor(currentY) * canvas.width + Math.floor(currentX)) * 4;
 
         if (visited.has(currentIndex)) continue;
         visited.add(currentIndex);

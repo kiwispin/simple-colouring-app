@@ -1,54 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Canvas App</title>
-    
-    <!-- Materialize CSS and Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>Image Color Picker</title>
+    <!-- Materialize CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-
-    <!-- Your Custom CSS -->
-    <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
 
-    <div class="container">
-        <!-- Color Picker Row -->
-        <div class="row">
-            <div class="input-field col s12">
-                <input type="color" id="colorPicker">
-                <label for="colorPicker">Choose a Color</label>
-            </div>
-        </div>
-        
-        <!-- Image Upload Row -->
-        <div class="row">
-            <div class="file-field input-field col s12">
+<div class="container">
+    <!-- Image Upload Row -->
+    <div class="row">
+        <div class="col s12">
+            <div class="file-field input-field">
                 <div class="btn">
                     <span>Upload Image</span>
                     <input type="file" id="imageUpload">
                 </div>
                 <div class="file-path-wrapper">
-                    <input class="file-path validate" type="text" placeholder="Upload a picture to edit">
+                    <input class="file-path validate" type="text" placeholder="Upload an image">
                 </div>
-            </div>
-        </div>
-        
-        <!-- Canvas Row -->
-        <div class="row">
-            <div class="col s12">
-                <canvas id="canvas"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- Materialize JS and Your Script -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <script src="script.js"></script>
-</body>
+    <!-- Color Picker Row -->
+    <div class="row">
+        <div class="col s12">
+            <label>Choose a Color:</label>
+            <div class="btn color-picker-btn">
+                <span>Select Color</span>
+                <input type="color" id="colorPicker" style="display: none;">
+            </div>
+            <span id="selectedColorDisplay" style="margin-left: 15px;"></span>
+        </div>
+    </div>
 
+    <!-- Canvas Row -->
+    <div class="row">
+        <div class="col s12">
+            <canvas id="canvas"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Materialize JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="script.js"></script>
+</body>
 </html>
