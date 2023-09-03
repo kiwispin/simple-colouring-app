@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const colorPicker = document.getElementById('colorPicker');
     const imageUpload = document.getElementById('imageUpload');
+    let imageRatio = 1;  // Will hold the ratio of the displayed image to its original size.
 
     imageUpload.addEventListener('change', function() {
         const file = this.files[0];
@@ -21,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         newWidth = newHeight * aspectRatio;
                     }
 
+                    imageRatio = img.width / newWidth;  // Calculate the image ratio.
+
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     ctx.drawImage(img, 0, 0, newWidth, newHeight);
                 }
@@ -36,8 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const y = event.clientY - rect.top;
         const chosenColor = colorPicker.value;
 
-        console.log(`Canvas clicked at (${x}, ${y}) with chosen color: ${chosenColor}`);
-        floodFill(canvas, x, y, hexToRgba(chosenColor));
+        floodFill(canvas, x * imageRatio, y * imageRatio, hexToRgba(chosenColor));  // Adjust the x and y by the image ratio.
     });
 });
 
@@ -46,8 +48,7 @@ function hexToRgba(hex) {
         g = parseInt(hex.slice(3, 5), 16),
         b = parseInt(hex.slice(5, 7), 16);
 
-    console.log(`Converted hex ${hex} to rgba: [${r}, ${g}, ${b}, 255]`);
-    return [r, g, b, 255];
+    return [r, g, b, 255];  // assuming full opacity
 }
 
 function floodFill(canvas, x, y, newColor) {
@@ -55,15 +56,13 @@ function floodFill(canvas, x, y, newColor) {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
     const targetColor = getColorAtPixel(imageData, x, y);
-
-    console.log(`Target color at (${x}, ${y}):`, targetColor);
-
+    const visited = new Set();
+    
     if (colorsMatch(targetColor, newColor)) {
         return;
     }
 
     const pixels = [[x, y]];
-    const visited = new Set();
 
     while (pixels.length) {
         const [currentX, currentY] = pixels.pop();
