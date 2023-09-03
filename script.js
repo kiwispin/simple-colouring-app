@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 img.src = event.target.result;
             }
             reader.readAsDataURL(file);
+
+            // Reset the file input value after processing the file.
+            imageUpload.value = "";
         }
     });
 
