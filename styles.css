@@ -1,48 +1,40 @@
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f3f3f3;
-    margin: 0;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-top: 2rem;
 }
 
-.toolbar {
-    background-color: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+canvas {
+    border: 1px solid black;
+    cursor: pointer;
     margin-top: 20px;
+}
+
+#toolbar {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     gap: 10px;
 }
 
-.file-input {
-    margin-right: 20px;
-}
-
-#color-container {
+#colorPickerContainer {
     display: flex;
-    gap: 10px;
+    flex-direction: row;
+    gap: 1rem;
+    margin: 1rem 0;
 }
 
 .color-box {
     width: 30px;
     height: 30px;
-    border: 2px solid transparent;
-    cursor: pointer;
     border-radius: 50%;
-}
-
-.color-box.selected {
-    border-color: #000;
-}
-
-canvas {
     border: 1px solid #000;
-    margin-top: 20px;
-    background-color: white;
+    cursor: pointer;
+    transition: border 0.3s ease;
+}
+
+.selected-color {
+    border: 3px solid black !important;
 }
