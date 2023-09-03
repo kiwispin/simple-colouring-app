@@ -7,7 +7,43 @@
     <title>Image Color Picker</title>
 </head>
 <body>
-    <div class="appContainer">
+    <div class="appContainer">a<!DOCTYPE html>
+        <html lang="en">
+        
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Image Color Picker</title>
+            <link rel="stylesheet" href="styles.css">
+        </head>
+        
+        <body>
+            <div class="app">
+                <h2>Image Color Picker</h2>
+                <input type="file" id="imageUpload">
+                <div class="color-palette">
+                    <!-- Rainbow colors, black, and a customizable color -->
+                    <div class="color-box" style="background-color: #FF0000;"></div>
+                    <div class="color-box" style="background-color: #FF7F00;"></div>
+                    <div class="color-box" style="background-color: #FFFF00;"></div>
+                    <div class="color-box" style="background-color: #7FFF00;"></div>
+                    <div class="color-box" style="background-color: #00FF00;"></div>
+                    <div class="color-box" style="background-color: #00FF7F;"></div>
+                    <div class="color-box" style="background-color: #00FFFF;"></div>
+                    <div class="color-box" style="background-color: #007FFF;"></div>
+                    <div class="color-box" style="background-color: #0000FF;"></div>
+                    <div class="color-box" style="background-color: #7F00FF;"></div>
+                    <div class="color-box" style="background-color: #FF00FF;"></div>
+                    <div class="color-box" style="background-color: #000000;"></div>
+                    <div class="color-box custom-color" style="background-color: #FFFFFF;"></div>
+                </div>
+                <canvas id="canvas"></canvas>
+            </div>
+            <script src="script.js"></script>
+        </body>
+        
+        </html>
+        
         <input type="file" id="imageUpload">
         <div id="colorContainer">
             <div class="colorBox" style="background-color: #FF0000;"></div>

@@ -2,10 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const imageUpload = document.getElementById('imageUpload');
-    const colorBoxes = document.querySelectorAll('.colorBox');
-    const customColorBox = document.querySelector('.customColorBox');
-    
-    let chosenColor = "#FFFFFF"; // Default to white
+    const colorBoxes = document.querySelectorAll('.color-box');
 
     imageUpload.addEventListener('change', function() {
         const file = this.files[0];
@@ -29,90 +26,126 @@ document.addEventListener('DOMContentLoaded', () => {
         const rect = canvas.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
-        const rgbaColor = hexToRgba(chosenColor);
+        const chosenColor = document.querySelector('.active-color').style.backgroundColor;
 
-        floodFill(canvas, x, y, rgbaColor);
+        const rgbaChosenColor = hexToRgba(chosenColor);
+        const targetColor = getColorAtPixel(ctx, x, y);
+
+        if (colorsMatch(targetColor, rgbaChosenColor)) {
+            return;  // Exit if the clicked color is the same as the chosen color.
+        }
+
+        floodFill(ctx, x, y, targetColor, rgbaChosenColor);
     });
 
     colorBoxes.forEach(box => {
         box.addEventListener('click', function() {
-            chosenColor = getComputedStyle(this).backgroundColor;
-            customColorBox.style.backgroundColor = chosenColor;
+            document.querySelector('.active-color').classList.remove('active-color');
+            this.classList.add('active-color');
         });
+
+        if (box.classList.contains('custom-color')) {
+            box.addEventListener('dblclick', function() {
+                const color = prompt('Enter a custom color (Hex format):', '#FFFFFF');
+                if (color) {
+                    box.style.backgroundColor = color;
+                }
+            });
+        }
     });
 
-    customColorBox.addEventListener('dblclick', function() {
-        const colorPicker = document.createElement('input');
-        colorPicker.type = 'color';
-        colorPicker.value = hexToRgba(chosenColor, true);
-        colorPicker.addEventListener('change', function() {
-            chosenColor = this.value;
-            customColorBox.style.backgroundColor = chosenColor;
-        });
-        colorPicker.click();
-    });
+    function hexToRgba(hex) {
+        let bigint = parseInt(hex.substring(1), 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return [r, g, b, 255];  // Assuming full opacity
+    }
+
+    function getColorAtPixel(context, x, y) {
+        return context.getImageData(x, y, 1, 1).data;
+    }
+
+    function colorsMatch(a, b) {
+        for (let i = 0; i < 4; i++) {
+            if (a[i] !== b[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function floodFill(context, x, y, targetColor, fillColor) {
+        const pixelStack = [[x, y]];
+        const w = context.canvas.width;
+        const h = context.canvas.height;
+        const imageData = context.getImageData(0, 0, w, h);
+        const pixels = imageData.data;
+        const target = targetColor;
+        const fill = fillColor;
+
+        while (pixelStack.length) {
+            let newPos, x, y, pixelPos, reachLeft, reachRight;
+            newPos = pixelStack.pop();
+            x = newPos[0];
+            y = newPos[1];
+
+            pixelPos = (y * w + x) * 4;
+            while (y-- >= 0 && colorsMatch(getPixel(pixels, pixelPos), target)) {
+                pixelPos -= w * 4;
+            }
+
+            pixelPos += w * 4;
+            ++y;
+            reachLeft = false;
+            reachRight = false;
+
+            while (y++ < h - 1 && colorsMatch(getPixel(pixels, pixelPos), target)) {
+                setColor(pixels, pixelPos, fill);
+
+                if (x > 0) {
+                    if (colorsMatch(getPixel(pixels, pixelPos - 4), target)) {
+                        if (!reachLeft) {
+                            pixelStack.push([x - 1, y]);
+                            reachLeft = true;
+                        }
+                    } else if (reachLeft) {
+                        reachLeft = false;
+                    }
+                }
+
+                if (x < w - 1) {
+                    if (colorsMatch(getPixel(pixels, pixelPos + 4), target)) {
+                        if (!reachRight) {
+                            pixelStack.push([x + 1, y]);
+                            reachRight = true;
+                        }
+                    } else if (reachRight) {
+                        reachRight = false;
+                    }
+                }
+
+                pixelPos += w * 4;
+            }
+        }
+
+        context.putImageData(imageData, 0, 0);
+    }
+
+    function getPixel(pixels, offset) {
+        return [
+            pixels[offset],
+            pixels[offset + 1],
+            pixels[offset + 2],
+            pixels[offset + 3]
+        ];
+    }
+
+    function setColor(pixels, offset, color) {
+        pixels[offset] = color[0];
+        pixels[offset + 1] = color[1];
+        pixels[offset + 2] = color[2];
+        pixels[offset + 3] = color[3];
+    }
 
 });
-
-function hexToRgba(hex, returnHex = false) {
-    if (returnHex) return hex;
-
-    let r = parseInt(hex.slice(1, 3), 16),
-        g = parseInt(hex.slice(3, 5), 16),
-        b = parseInt(hex.slice(5, 7), 16);
-
-    return [r, g, b, 255];
-}
-
-function floodFill(canvas, x, y, newColor) {
-    const ctx = canvas.getContext('2d');
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-    const targetColor = getColorAtPixel(imageData, x, y);
-
-    if (colorsMatch(targetColor, newColor)) {
-        return;
-    }
-
-    const pixels = [[x, y]];
-    const visited = new Set();
-
-    while (pixels.length) {
-        const [currentX, currentY] = pixels.pop();
-        const currentIndex = (Math.floor(currentY) * canvas.width + Math.floor(currentX)) * 4;
-
-        if (visited.has(currentIndex)) continue;
-        visited.add(currentIndex);
-
-        const currentColor = getColorAtPixel(imageData, currentX, currentY);
-        if (colorsMatch(currentColor, targetColor)) {
-            data[currentIndex] = newColor[0];
-            data[currentIndex + 1] = newColor[1];
-            data[currentIndex + 2] = newColor[2];
-            data[currentIndex + 3] = newColor[3];
-
-            if (currentX > 0) pixels.push([currentX - 1, currentY]);
-            if (currentX < canvas.width - 1) pixels.push([currentX + 1, currentY]);
-            if (currentY > 0) pixels.push([currentX, currentY - 1]);
-            if (currentY < canvas.height - 1) pixels.push([currentX, currentY + 1]);
-        }
-    }
-
-    ctx.putImageData(imageData, 0, 0);
-}
-
-function getColorAtPixel(imageData, x, y) {
-    const {width, data} = imageData;
-    const intX = Math.floor(x);
-    const intY = Math.floor(y);
-    const index = (intY * width + intX) * 4;
-
-    return [data[index], data[index + 1], data[index + 2], data[index + 3]];
-}
-
-function colorsMatch(a, b, tolerance = 10) {
-    for (let i = 0; i < a.length; i++) {
-        if (Math.abs(a[i] - b[i]) > tolerance) return false;
-    }
-    return true;
-}
