@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     canvas.addEventListener('click', function(event) {
         const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
+        const x = Math.floor(event.clientX - rect.left);
+        const y = Math.floor(event.clientY - rect.top);
         const chosenColor = colorPicker.value;
 
         console.log(`Canvas clicked at (${x}, ${y}) with chosen color: ${chosenColor}`);
