@@ -1,21 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const colorPicker = document.getElementById('colorPicker');
     const imageUpload = document.getElementById('imageUpload');
 
     imageUpload.addEventListener('change', function() {
-        const file = this.files[0];
-        const reader = new FileReader();
+        if (this.files && this.files.length > 0) {
+            const file = this.files[0];
+            const reader = new FileReader();
 
-        reader.onload = function(event) {
-            const img = new Image();
-            img.onload = function() {
-                ctx.drawImage(img, 0, 0);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    ctx.drawImage(img, 0, 0);
+                }
+                img.src = event.target.result;
             }
-            img.src = event.target.result;
+            reader.readAsDataURL(file);
         }
-        reader.readAsDataURL(file);
     });
 
     canvas.addEventListener('click', function(event) {
