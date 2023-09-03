@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const colorPicker = document.getElementById('colorPicker');
     const imageUpload = document.getElementById('imageUpload');
-    let imageRatio = 1;  // Will hold the ratio of the displayed image to its original size.
+    let imageRatio = 1;
 
     imageUpload.addEventListener('change', function() {
         const file = this.files[0];
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         newWidth = newHeight * aspectRatio;
                     }
 
-                    imageRatio = img.width / newWidth;  // Calculate the image ratio.
+                    imageRatio = img.width / newWidth;
 
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     ctx.drawImage(img, 0, 0, newWidth, newHeight);
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const y = event.clientY - rect.top;
         const chosenColor = colorPicker.value;
 
-        floodFill(canvas, x * imageRatio, y * imageRatio, hexToRgba(chosenColor));  // Adjust the x and y by the image ratio.
+        floodFill(canvas, x * imageRatio, y * imageRatio, hexToRgba(chosenColor));
     });
 });
 
@@ -48,7 +48,7 @@ function hexToRgba(hex) {
         g = parseInt(hex.slice(3, 5), 16),
         b = parseInt(hex.slice(5, 7), 16);
 
-    return [r, g, b, 255];  // assuming full opacity
+    return [r, g, b, 255];
 }
 
 function floodFill(canvas, x, y, newColor) {
@@ -56,12 +56,15 @@ function floodFill(canvas, x, y, newColor) {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
     const targetColor = getColorAtPixel(imageData, x, y);
-    const visited = new Set();
     
+    console.log(`Target color for filling at (${x}, ${y}):`, targetColor);
+
     if (colorsMatch(targetColor, newColor)) {
+        console.log(`Colors match, no fill needed.`);
         return;
     }
 
+    const visited = new Set();
     const pixels = [[x, y]];
 
     while (pixels.length) {
@@ -72,13 +75,13 @@ function floodFill(canvas, x, y, newColor) {
         visited.add(currentIndex);
 
         const currentColor = getColorAtPixel(imageData, currentX, currentY);
+
         if (colorsMatch(currentColor, targetColor)) {
             data[currentIndex] = newColor[0];
             data[currentIndex + 1] = newColor[1];
             data[currentIndex + 2] = newColor[2];
             data[currentIndex + 3] = newColor[3];
 
-            // Check neighboring pixels
             if (currentX > 0) pixels.push([currentX - 1, currentY]);
             if (currentX < canvas.width - 1) pixels.push([currentX + 1, currentY]);
             if (currentY > 0) pixels.push([currentX, currentY - 1]);
@@ -96,5 +99,6 @@ function getColorAtPixel(imageData, x, y) {
 }
 
 function colorsMatch(a, b) {
+    if (!a || !b) return false;  // Ensure that the colors are valid.
     return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
 }
