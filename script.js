@@ -106,7 +106,7 @@ function putColorAtPixel(imageData, x, y, color) {
     data[index + 3] = color[3];
 }
 
-function colorsMatch(a, b, tolerance = 10) {
+function colorsMatch(a, b, tolerance = 30) {
     for (let i = 0; i < a.length; i++) {
         if (Math.abs(a[i] - b[i]) > tolerance) return false;
     }
