@@ -105,7 +105,6 @@ function floodFill(canvas, x, y, newColor) {
         visited.add(currentIndex);
 
         const currentColor = getColorAtPixel(imageData, currentX, currentY);
-        console.log(`Checking pixel at (${currentX}, ${currentY}), color:`, currentColor);
 
         if (colorsMatch(currentColor, targetColor)) {
             data[currentIndex] = newColor[0];
@@ -113,10 +112,10 @@ function floodFill(canvas, x, y, newColor) {
             data[currentIndex + 2] = newColor[2];
             data[currentIndex + 3] = newColor[3];
 
-            if (currentX > 0) pixels.push([currentX - 1, currentY]);
-            if (currentX < canvas.width - 1) pixels.push([currentX + 1, currentY]);
-            if (currentY > 0) pixels.push([currentX, currentY - 1]);
-            if (currentY < canvas.height - 1) pixels.push([currentX, currentY + 1]);
+            if (currentX > 0 && !visited.has((currentY * canvas.width + (currentX - 1)) * 4)) pixels.push([currentX - 1, currentY]);
+            if (currentX < canvas.width - 1 && !visited.has((currentY * canvas.width + (currentX + 1)) * 4)) pixels.push([currentX + 1, currentY]);
+            if (currentY > 0 && !visited.has(((currentY - 1) * canvas.width + currentX) * 4)) pixels.push([currentX, currentY - 1]);
+            if (currentY < canvas.height - 1 && !visited.has(((currentY + 1) * canvas.width + currentX) * 4)) pixels.push([currentX, currentY + 1]);
         }
     }
 
