@@ -4,8 +4,9 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: start; /* This adjusts the vertical position to the top */
     height: 100vh;
+    padding-top: 20px; /* Provide a little top space */
 }
 
 .toolbar {
