@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const colorPicker = document.getElementById('colorPicker');
     const imageUpload = document.getElementById('imageUpload');
-    let imageRatio = 1;
 
     imageUpload.addEventListener('change', function() {
         const file = this.files[0];
@@ -14,18 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const img = new Image();
                 img.onload = function() {
                     const aspectRatio = img.width / img.height;
-                    let newWidth = canvas.width;
-                    let newHeight = newWidth / aspectRatio;
-
-                    if (newHeight > canvas.height) {
-                        newHeight = canvas.height;
-                        newWidth = newHeight * aspectRatio;
-                    }
-
-                    imageRatio = img.width / newWidth;
-
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(img, 0, 0, newWidth, newHeight);
+                    canvas.width = canvas.height * aspectRatio;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 }
                 img.src = event.target.result;
             }
@@ -35,11 +24,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     canvas.addEventListener('click', function(event) {
         const rect = canvas.getBoundingClientRect();
-        const x = Math.round(event.clientX - rect.left);
-        const y = Math.round(event.clientY - rect.top);
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
         const chosenColor = colorPicker.value;
 
-        floodFill(canvas, x * imageRatio, y * imageRatio, hexToRgba(chosenColor));
+        console.log(`Canvas clicked at (${x}, ${y}) with chosen color: ${chosenColor}`);
+        
+        const rgbaColor = hexToRgba(chosenColor);
+        console.log(`Converted hex ${chosenColor} to rgba:`, rgbaColor);
+
+        floodFill(canvas, x, y, rgbaColor);
     });
 });
 
@@ -48,27 +42,23 @@ function hexToRgba(hex) {
         g = parseInt(hex.slice(3, 5), 16),
         b = parseInt(hex.slice(5, 7), 16);
 
-    return [r, g, b, 255];
+    return [r, g, b, 255];  // assuming full opacity
 }
 
 function floodFill(canvas, x, y, newColor) {
-    x = Math.round(x);
-    y = Math.round(y);
-
     const ctx = canvas.getContext('2d');
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
     const targetColor = getColorAtPixel(imageData, x, y);
-    
-    console.log(`Target color for filling at (${x}, ${y}):`, targetColor);
 
+    console.log(`Target color at (${x}, ${y}):`, targetColor);
+    
     if (colorsMatch(targetColor, newColor)) {
-        console.log(`Colors match, no fill needed.`);
         return;
     }
 
-    const visited = new Set();
     const pixels = [[x, y]];
+    const visited = new Set();
 
     while (pixels.length) {
         const [currentX, currentY] = pixels.pop();
@@ -78,13 +68,13 @@ function floodFill(canvas, x, y, newColor) {
         visited.add(currentIndex);
 
         const currentColor = getColorAtPixel(imageData, currentX, currentY);
-
         if (colorsMatch(currentColor, targetColor)) {
             data[currentIndex] = newColor[0];
             data[currentIndex + 1] = newColor[1];
             data[currentIndex + 2] = newColor[2];
             data[currentIndex + 3] = newColor[3];
 
+            // Check neighboring pixels
             if (currentX > 0) pixels.push([currentX - 1, currentY]);
             if (currentX < canvas.width - 1) pixels.push([currentX + 1, currentY]);
             if (currentY > 0) pixels.push([currentX, currentY - 1]);
@@ -96,15 +86,14 @@ function floodFill(canvas, x, y, newColor) {
 }
 
 function getColorAtPixel(imageData, x, y) {
-    x = Math.round(x);
-    y = Math.round(y);
-
     const {width, data} = imageData;
     const index = (y * width + x) * 4;
     return [data[index], data[index + 1], data[index + 2], data[index + 3]];
 }
 
-function colorsMatch(a, b) {
+function colorsMatch(a, b, tolerance = 10) {
     if (!a || !b) return false;  // Ensure that the colors are valid.
-    return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
+    return Math.abs(a[0] - b[0]) <= tolerance &&
+           Math.abs(a[1] - b[1]) <= tolerance &&
+           Math.abs(a[2] - b[2]) <= tolerance;
 }
