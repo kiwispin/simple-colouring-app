@@ -3,33 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Color Picker</title>
+    <title>Flood Fill</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="app-container">
-        <header>
-            <h1>Image Color Picker</h1>
-        </header>
-        
-        <div class="controls">
-            <input type="file" id="imageUpload" class="file-input">
-            <div class="color-palette">
-                <div class="color-box red" data-color="#FF0000"></div>
-                <div class="color-box orange" data-color="#FF7F00"></div>
-                <div class="color-box yellow" data-color="#FFFF00"></div>
-                <div class="color-box green" data-color="#7FFF00"></div>
-                <div class="color-box blue" data-color="#0000FF"></div>
-                <div class="color-box indigo" data-color="#4B0082"></div>
-                <div class="color-box violet" data-color="#9400D3"></div>
-                <div class="color-box black" data-color="#000000"></div>
-                <div class="color-box custom-color" data-color="#FFFFFF"></div>
-            </div>
+    <div class="controls">
+        <input type="file" id="imageUpload">
+        <div class="colors">
+            <div class="color-box" style="background-color: #FF0000;" data-color="#FF0000"></div>
+            <div class="color-box" style="background-color: #FF7F00;" data-color="#FF7F00"></div>
+            <div class="color-box" style="background-color: #FFFF00;" data-color="#FFFF00"></div>
+            <div class="color-box" style="background-color: #7FFF00;" data-color="#7FFF00"></div>
+            <div class="color-box" style="background-color: #00FF00;" data-color="#00FF00"></div>
+            <div class="color-box" style="background-color: #00FF7F;" data-color="#00FF7F"></div>
+            <div class="color-box" style="background-color: #00FFFF;" data-color="#00FFFF"></div>
+            <div class="color-box" style="background-color: #007FFF;" data-color="#007FFF"></div>
+            <div class="color-box" style="background-color: #0000FF;" data-color="#0000FF"></div>
+            <div class="color-box" style="background-color: #7F00FF;" data-color="#7F00FF"></div>
+            <div class="color-box" style="background-color: #FF00FF;" data-color="#FF00FF"></div>
+            <div class="color-box" style="background-color: #FFFFFF;" data-color="#FFFFFF" class="custom-color"></div>
+            <div class="color-box" style="background-color: #000000;" data-color="#000000"></div>
         </div>
-        
-        <canvas id="canvas"></canvas>
     </div>
-
+    <canvas id="canvas" width="800" height="600"></canvas>
     <script src="script.js"></script>
 </body>
 </html>
