@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const ctx = canvas.getContext('2d');
     const imageUpload = document.getElementById('imageUpload');
-    let chosenColor = "#FFFFFF"; // Default to white
+    let chosenColor = "#FFFFFF";
 
     imageUpload.addEventListener('change', function() {
         const file = this.files[0];
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         box.addEventListener('click', function () {
             document.querySelectorAll('.color-box').forEach(b => b.classList.remove('selected'));
             this.classList.add('selected');
-            chosenColor = this.getAttribute('data-color');
+            chosenColor = this.getAttribute('data-color') || chosenColor;
         });
     });
 
@@ -54,7 +54,7 @@ function hexToRgba(hex) {
         g = parseInt(hex.slice(3, 5), 16),
         b = parseInt(hex.slice(5, 7), 16);
 
-    return [r, g, b, 255];  // assuming full opacity
+    return [r, g, b, 255];
 }
 
 function getColorAtPixel(imageData, x, y) {
@@ -68,5 +68,35 @@ function colorsMatch(a, b) {
 }
 
 function floodFill(canvas, x, y, newColor) {
-    // ... (keep the floodFill function as previously provided here)
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const targetColor = getColorAtPixel(imageData, x, y);
+
+    if (colorsMatch(targetColor, newColor)) return;
+
+    const pixelsToCheck = [x, y];
+    while (pixelsToCheck.length > 0) {
+        const currY = pixelsToCheck.pop();
+        const currX = pixelsToCheck.pop();
+
+        const currColor = getColorAtPixel(imageData, currX, currY);
+        if (!colorsMatch(currColor, targetColor)) continue;
+
+        putColorAtPixel(imageData, currX, currY, newColor);
+
+        pixelsToCheck.push(currX + 1, currY);
+        pixelsToCheck.push(currX - 1, currY);
+        pixelsToCheck.push(currX, currY + 1);
+        pixelsToCheck.push(currX, currY - 1);
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+}
+
+function putColorAtPixel(imageData, x, y, color) {
+    const index = (y * imageData.width + x) * 4;
+    imageData.data[index] = color[0];
+    imageData.data[index + 1] = color[1];
+    imageData.data[index + 2] = color[2];
+    imageData.data[index + 3] = color[3];
 }
