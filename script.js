@@ -74,20 +74,29 @@ function floodFill(canvas, x, y, newColor) {
 
     if (colorsMatch(targetColor, newColor)) return;
 
-    const pixelsToCheck = [x, y];
-    while (pixelsToCheck.length > 0) {
-        const currY = pixelsToCheck.pop();
-        const currX = pixelsToCheck.pop();
+    const queue = [];
+    queue.push([x, y]);
 
-        const currColor = getColorAtPixel(imageData, currX, currY);
-        if (!colorsMatch(currColor, targetColor)) continue;
+    while (queue.length) {
+        const [currentX, currentY] = queue.shift();
+        const currentColor = getColorAtPixel(imageData, currentX, currentY);
 
-        putColorAtPixel(imageData, currX, currY, newColor);
+        if (!colorsMatch(currentColor, targetColor)) continue;
 
-        pixelsToCheck.push(currX + 1, currY);
-        pixelsToCheck.push(currX - 1, currY);
-        pixelsToCheck.push(currX, currY + 1);
-        pixelsToCheck.push(currX, currY - 1);
+        putColorAtPixel(imageData, currentX, currentY, newColor);
+
+        // Check the adjacent pixels, and if they match the target color, add them to the queue.
+        [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([dx, dy]) => {
+            const nextX = currentX + dx;
+            const nextY = currentY + dy;
+
+            if (nextX >= 0 && nextX < canvas.width && nextY >= 0 && nextY < canvas.height) {
+                const adjacentColor = getColorAtPixel(imageData, nextX, nextY);
+                if (colorsMatch(adjacentColor, targetColor)) {
+                    queue.push([nextX, nextY]);
+                }
+            }
+        });
     }
 
     ctx.putImageData(imageData, 0, 0);
