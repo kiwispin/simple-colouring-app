@@ -1,8 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    const colorPicker = document.getElementById('colorPicker');
     const imageUpload = document.getElementById('imageUpload');
+    const colorBoxes = document.querySelectorAll('.colorBox');
+    const customColorBox = document.querySelector('.customColorBox');
+    
+    let chosenColor = "#FFFFFF"; // Default to white
 
     imageUpload.addEventListener('change', function() {
         const file = this.files[0];
@@ -26,27 +29,39 @@ document.addEventListener('DOMContentLoaded', () => {
         const rect = canvas.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
-        const chosenColor = colorPicker.value;
-
-        console.log(`Canvas clicked at (${x}, ${y}) with chosen color: ${chosenColor}`);
         const rgbaColor = hexToRgba(chosenColor);
-        console.log('Converted hex', chosenColor, 'to rgba:', rgbaColor);
 
         floodFill(canvas, x, y, rgbaColor);
     });
 
-    // Display the chosen color in the span next to the picker
-    colorPicker.addEventListener('change', function() {
-        document.getElementById('selectedColorDisplay').style.backgroundColor = this.value;
+    colorBoxes.forEach(box => {
+        box.addEventListener('click', function() {
+            chosenColor = getComputedStyle(this).backgroundColor;
+            customColorBox.style.backgroundColor = chosenColor;
+        });
     });
+
+    customColorBox.addEventListener('dblclick', function() {
+        const colorPicker = document.createElement('input');
+        colorPicker.type = 'color';
+        colorPicker.value = hexToRgba(chosenColor, true);
+        colorPicker.addEventListener('change', function() {
+            chosenColor = this.value;
+            customColorBox.style.backgroundColor = chosenColor;
+        });
+        colorPicker.click();
+    });
+
 });
 
-function hexToRgba(hex) {
+function hexToRgba(hex, returnHex = false) {
+    if (returnHex) return hex;
+
     let r = parseInt(hex.slice(1, 3), 16),
         g = parseInt(hex.slice(3, 5), 16),
         b = parseInt(hex.slice(5, 7), 16);
 
-    return [r, g, b, 255];  // assuming full opacity
+    return [r, g, b, 255];
 }
 
 function floodFill(canvas, x, y, newColor) {
@@ -54,8 +69,6 @@ function floodFill(canvas, x, y, newColor) {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
     const targetColor = getColorAtPixel(imageData, x, y);
-    
-    console.log('Target color at', `(${x}, ${y}):`, targetColor);
 
     if (colorsMatch(targetColor, newColor)) {
         return;
@@ -90,7 +103,10 @@ function floodFill(canvas, x, y, newColor) {
 
 function getColorAtPixel(imageData, x, y) {
     const {width, data} = imageData;
-    const index = (y * width + x) * 4;
+    const intX = Math.floor(x);
+    const intY = Math.floor(y);
+    const index = (intY * width + intX) * 4;
+
     return [data[index], data[index + 1], data[index + 2], data[index + 3]];
 }
 
