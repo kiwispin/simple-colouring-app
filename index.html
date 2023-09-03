@@ -1,45 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Editor</title>
+    <title>Image Coloring Tool</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-
-<div class="container">
-    <h1>Image Editor</h1>
-
-    <div class="controls">
-        <label for="imageUpload" class="btn">Choose an Image</label>
-        <input type="file" id="imageUpload" hidden>
-
-        <div class="colors">
-            <div class="color-box active-color" style="background-color: #FF0000;"></div>
-            <div class="color-box" style="background-color: #FF7F00;"></div>
-            <div class="color-box" style="background-color: #FFFF00;"></div>
-            <div class="color-box" style="background-color: #7FFF00;"></div>
-            <div class="color-box" style="background-color: #00FF00;"></div>
-            <div class="color-box" style="background-color: #00FF7F;"></div>
-            <div class="color-box" style="background-color: #00FFFF;"></div>
-            <div class="color-box" style="background-color: #007FFF;"></div>
-            <div class="color-box" style="background-color: #0000FF;"></div>
-            <div class="color-box" style="background-color: #7F00FF;"></div>
-            <div class="color-box" style="background-color: #FF00FF;"></div>
-            <div class="color-box" style="background-color: #FF007F;"></div>
-            <div class="color-box" style="background-color: #000000;"></div>
-            <div class="color-box custom-color" style="background-color: #FFFFFF;"></div>
+    <div class="container">
+        <input type="file" id="imageUpload">
+        <canvas id="canvas"></canvas>
+        <div class="color-selection">
+            <div class="color-box red"></div>
+            <div class="color-box orange"></div>
+            <div class="color-box yellow"></div>
+            <div class="color-box green"></div>
+            <div class="color-box blue"></div>
+            <div class="color-box indigo"></div>
+            <div class="color-box violet"></div>
+            <div class="color-box black"></div>
+            <div class="color-box custom-color"></div>
         </div>
     </div>
-
-    <canvas id="canvas"></canvas>
-</div>
-
-<script src="script.js"></script>
-
+    <script src="script.js"></script>
 </body>
-
 </html>
