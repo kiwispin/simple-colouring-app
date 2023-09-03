@@ -1,15 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Coloring App</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <input type="file" id="imageUpload" accept="image/*">
-    <input type="color" id="colorPicker">
-    <canvas id="canvas" width="500" height="500"></canvas>
-    <script src="script.js"></script>
-</body>
-</html>
+<div class="container">
+    <div class="row">
+        <div class="input-field col s12">
+            <input type="color" id="colorPicker">
+            <label for="colorPicker">Choose a Color</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="file-field input-field">
+            <div class="btn">
+                <span>Upload Image</span>
+                <input type="file" id="imageUpload">
+            </div>
+            <div class="file-path-wrapper">
+                <input class="file-path validate" type="text" placeholder="Upload a picture to edit">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <canvas id="canvas"></canvas>
+    </div>
+</div>
