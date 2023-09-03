@@ -35,8 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     canvas.addEventListener('click', function(event) {
         const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
+        const x = Math.round(event.clientX - rect.left);
+        const y = Math.round(event.clientY - rect.top);
         const chosenColor = colorPicker.value;
 
         floodFill(canvas, x * imageRatio, y * imageRatio, hexToRgba(chosenColor));
@@ -52,6 +52,9 @@ function hexToRgba(hex) {
 }
 
 function floodFill(canvas, x, y, newColor) {
+    x = Math.round(x);
+    y = Math.round(y);
+
     const ctx = canvas.getContext('2d');
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
@@ -93,6 +96,9 @@ function floodFill(canvas, x, y, newColor) {
 }
 
 function getColorAtPixel(imageData, x, y) {
+    x = Math.round(x);
+    y = Math.round(y);
+
     const {width, data} = imageData;
     const index = (y * width + x) * 4;
     return [data[index], data[index + 1], data[index + 2], data[index + 3]];
