@@ -64,10 +64,10 @@ function floodFill(canvas, x, y, newColor) {
             data[currentIndex + 3] = newColor[3];
 
             // Check neighboring pixels
-            pixels.push([currentX - 1, currentY]);
-            pixels.push([currentX + 1, currentY]);
-            pixels.push([currentX, currentY - 1]);
-            pixels.push([currentX, currentY + 1]);
+            if (currentX > 0) pixels.push([currentX - 1, currentY]);
+            if (currentX < canvas.width - 1) pixels.push([currentX + 1, currentY]);
+            if (currentY > 0) pixels.push([currentX, currentY - 1]);
+            if (currentY < canvas.height - 1) pixels.push([currentX, currentY + 1]);
         }
     }
 
@@ -81,8 +81,5 @@ function getColorAtPixel(imageData, x, y) {
 }
 
 function colorsMatch(a, b) {
-    for (let i = 0; i < 4; i++) {
-        if (a[i] !== b[i]) return false;
-    }
-    return true;
+    return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
 }
