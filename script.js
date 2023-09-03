@@ -1,91 +1,88 @@
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-const colorPicker = document.getElementById('colorPicker');
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const colorPicker = document.getElementById('colorPicker');
+    const imageUpload = document.getElementById('imageUpload');
 
-let img = new Image();
-img.onload = function() {
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-};
+    imageUpload.addEventListener('change', function() {
+        const file = this.files[0];
+        const reader = new FileReader();
 
-function floodFill(startX, startY, startColor, fillColor) {
-    let pixelStack = [[startX, startY]];
-    while(pixelStack.length) {
-        let newPos, x, y, pixelPos, reachLeft, reachRight;
-        newPos = pixelStack.pop();
-        x = newPos[0];
-        y = newPos[1];
-
-        pixelPos = (y*canvas.width + x) * 4;
-        while(y-- >= 0 && matchColor(pixelPos, startColor)) {
-            pixelPos -= canvas.width * 4;
-        }
-        pixelPos += canvas.width * 4;
-        y++;
-        reachLeft = false;
-        reachRight = false;
-        while(y++ < canvas.height-1 && matchColor(pixelPos, startColor)) {
-            setColor(pixelPos, fillColor);
-
-            if(x > 0) {
-                if(matchColor(pixelPos - 4, startColor)) {
-                    if(!reachLeft){
-                        pixelStack.push([x - 1, y]);
-                        reachLeft = true;
-                    }
-                }
-                else if(reachLeft) {
-                    reachLeft = false;
-                }
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0);
             }
-            
-            if(x < canvas.width-1) {
-                if(matchColor(pixelPos + 4, startColor)) {
-                    if(!reachRight) {
-                        pixelStack.push([x + 1, y]);
-                        reachRight = true;
-                    }
-                }
-                else if(reachRight) {
-                    reachRight = false;
-                }
-            }
-
-            pixelPos += canvas.width * 4;
+            img.src = event.target.result;
         }
-    }
-    ctx.putImageData(ctx.getImageData(0, 0, canvas.width, canvas.height), 0, 0);
-}
+        reader.readAsDataURL(file);
+    });
 
-function matchColor(pixelPos, color) {
-    let data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-    return (data[pixelPos]   === color[0] && 
-            data[pixelPos+1] === color[1] && 
-            data[pixelPos+2] === color[2] && 
-            data[pixelPos+3] === color[3]);
-}
-
-function setColor(pixelPos, fillColor) {
-    let data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-    data[pixelPos]   = fillColor[0];
-    data[pixelPos+1] = fillColor[1];
-    data[pixelPos+2] = fillColor[2];
-    data[pixelPos+3] = fillColor[3];
-}
-
-canvas.addEventListener('click', function(e) {
-    const x = e.offsetX;
-    const y = e.offsetY;
-    const pixel = ctx.getImageData(x, y, 1, 1).data;
-    const fillColor = Array.from(colorPicker.value.matchAll(/[A-Za-z0-9]{2}/g)).map(v => parseInt(v, 16));
-    fillColor.push(255); // Alpha
-
-    floodFill(x, y, Array.from(pixel), fillColor);
+    canvas.addEventListener('click', function(event) {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        const chosenColor = colorPicker.value;
+        
+        floodFill(canvas, x, y, hexToRgba(chosenColor));
+    });
 });
 
-// Optional: To upload an image
-document.getElementById('imageUpload').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        img.src = URL.createObjectURL(file);
+function hexToRgba(hex) {
+    let r = parseInt(hex.slice(1, 3), 16),
+        g = parseInt(hex.slice(3, 5), 16),
+        b = parseInt(hex.slice(5, 7), 16);
+
+    return [r, g, b, 255];  // assuming full opacity
+}
+
+function floodFill(canvas, x, y, newColor) {
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    const targetColor = getColorAtPixel(imageData, x, y);
+    const visited = new Set();
+    
+    if (colorsMatch(targetColor, newColor)) {
+        return;
     }
-});
+
+    const pixels = [[x, y]];
+
+    while (pixels.length) {
+        const [currentX, currentY] = pixels.pop();
+        const currentIndex = (currentY * canvas.width + currentX) * 4;
+
+        if (visited.has(currentIndex)) continue;
+        visited.add(currentIndex);
+
+        const currentColor = getColorAtPixel(imageData, currentX, currentY);
+        if (colorsMatch(currentColor, targetColor)) {
+            data[currentIndex] = newColor[0];
+            data[currentIndex + 1] = newColor[1];
+            data[currentIndex + 2] = newColor[2];
+            data[currentIndex + 3] = newColor[3];
+
+            // Check neighboring pixels
+            pixels.push([currentX - 1, currentY]);
+            pixels.push([currentX + 1, currentY]);
+            pixels.push([currentX, currentY - 1]);
+            pixels.push([currentX, currentY + 1]);
+        }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+}
+
+function getColorAtPixel(imageData, x, y) {
+    const {width, data} = imageData;
+    const index = (y * width + x) * 4;
+    return [data[index], data[index + 1], data[index + 2], data[index + 3]];
+}
+
+function colorsMatch(a, b) {
+    for (let i = 0; i < 4; i++) {
+        if (a[i] !== b[i]) return false;
+    }
+    return true;
+}
