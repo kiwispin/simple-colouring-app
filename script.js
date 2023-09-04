@@ -23,14 +23,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    let selectedColor = [0, 0, 0, 255];
+    let selectedColor = 'rgb(0, 0, 0)';
+
+    function setColor(color) {
+        document.querySelector('.color-box.active')?.classList.remove('active');
+        selectedColor = color;
+        console.log(`Selected color: ${color}`);
+        [...document.querySelectorAll('.color-box')].find(box => box.style.backgroundColor === color).classList.add('active');
+    }
 
     colorBoxes.forEach(box => {
         box.addEventListener('click', function() {
-            document.querySelector('.color-box.selected')?.classList.remove('selected');
-            this.classList.add('selected');
-            selectedColor = hexToRgba(this.dataset.color);
-            console.log(`Selected color: ${selectedColor}`);
+            setColor(this.style.backgroundColor);
         });
     });
 
@@ -38,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rect = canvas.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
-        const newColor = selectedColor;
+        const newColor = parseColor(selectedColor);
 
         console.log(`Canvas clicked at (${x}, ${y}) with chosen color: ${newColor}`);
 
@@ -51,12 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
         floodFill(canvas, x, y, newColor);
     });
 
-    function hexToRgba(hex) {
-        let r = parseInt(hex.slice(1, 3), 16),
-            g = parseInt(hex.slice(3, 5), 16),
-            b = parseInt(hex.slice(5, 7), 16);
-
-        return [r, g, b, 255];
+    function parseColor(color) {
+        const match = color.match(/\d+/g);
+        return match ? [parseInt(match[0]), parseInt(match[1]), parseInt(match[2]), 255] : [0, 0, 0, 255];
     }
 
     function getColorAtPixel(imageData, x, y) {
@@ -95,18 +96,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (visited.has(currentIndex)) continue;
             visited.add(currentIndex);
 
-            const currentColor = getColorAtPixel(imageData, currentX, currentY);
-
-            if (colorsMatch(currentColor, targetColor)) {
+            if (colorsMatch(getColorAtPixel(imageData, currentX, currentY), targetColor)) {
                 data[currentIndex] = newColor[0];
                 data[currentIndex + 1] = newColor[1];
                 data[currentIndex + 2] = newColor[2];
                 data[currentIndex + 3] = newColor[3];
 
-                if (currentX > 0 && !visited.has((currentY * canvas.width + (currentX - 1)) * 4)) pixels.push([currentX - 1, currentY]);
-                if (currentX < canvas.width - 1 && !visited.has((currentY * canvas.width + (currentX + 1)) * 4)) pixels.push([currentX + 1, currentY]);
-                if (currentY > 0 && !visited.has(((currentY - 1) * canvas.width + currentX) * 4)) pixels.push([currentX, currentY - 1]);
-                if (currentY < canvas.height - 1 && !visited.has(((currentY + 1) * canvas.width + currentX) * 4)) pixels.push([currentX, currentY + 1]);
+                pixels.push([currentX + 1, currentY]);
+                pixels.push([currentX - 1, currentY]);
+                pixels.push([currentX, currentY + 1]);
+                pixels.push([currentX, currentY - 1]);
             }
         }
 

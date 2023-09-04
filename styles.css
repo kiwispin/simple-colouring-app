@@ -4,17 +4,17 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: start; /* This adjusts the vertical position to the top */
+    justify-content: start; 
     height: 100vh;
-    padding-top: 20px; /* Provide a little top space */
+    padding-top: 20px;
 }
 
 .toolbar {
     display: flex;
-    align-items: center; /* This ensures vertical alignment */
-    justify-content: center; /* Horizontally centers everything */
-    gap: 10px; /* Gives some space between the button and the color boxes */
-    margin-bottom: 20px; /* Some margin to separate the toolbar from the canvas */
+    align-items: center;
+    justify-content: center; 
+    gap: 10px; 
+    margin-bottom: 20px;
 }
 
 #upload-container {
@@ -25,7 +25,7 @@ body {
     padding: 5px 15px;
     border-radius: 8px;
     cursor: pointer;
-    border: 2px solid transparent; /* Reserve space for active border */
+    border: 2px solid transparent;
 }
 
 #upload-label {
@@ -42,7 +42,7 @@ body {
 
 #color-container {
     display: flex;
-    align-items: center; /* Aligns the color boxes vertically to the center */
+    align-items: center; 
 }
 
 .color-box {
@@ -51,12 +51,12 @@ body {
     border-radius: 50%;
     margin: 0 5px;
     cursor: pointer;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Added a subtle shadow for depth */
-    border: 2px solid transparent; /* Reserve space for active border */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    border: 2px solid transparent; 
 }
 
 .color-box.active {
-    border-color: black; /* Black border for the active color */
+    border-color: black; 
 }
 
 canvas {
