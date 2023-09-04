@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         box.addEventListener('click', function() {
             document.querySelector('.color-box.active')?.classList.remove('active');
             this.classList.add('active');
-            selectedColor = getRgbArray(this.style.backgroundColor);
+            selectedColor = getRgbArray(window.getComputedStyle(this).backgroundColor);
             console.log(`Selected color: ${selectedColor}`);
         });
     });
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getRgbArray(color) {
         const match = color.match(/\d+/g);
-        return match ? match.map(num => parseInt(num)).concat(255) : [0, 0, 0, 255];
+        return match ? match.map(num => parseInt(num)) : [0, 0, 0, 255];
     }
 
     function getColorAtPixel(imageData, x, y) {
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const { width, height } = canvas;
         const { data } = imageData;
         const target = targetColor.slice(0, 3);
-        const replacement = newColor.slice(0, 3);
+        const replacement = newColor;
         const visited = new Set();
 
         while (stack.length) {
