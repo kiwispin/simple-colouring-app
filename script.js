@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d');
     const imageUpload = document.getElementById('imageUpload');
     const colorBoxes = document.querySelectorAll('.color-box');
+    const colorPicker = document.getElementById('color-picker');
+    const colorPickerWrapper = document.querySelector('.color-picker-wrapper');
 
     imageUpload.addEventListener('change', function() {
         const file = this.files[0];
@@ -34,6 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    colorPicker.addEventListener('input', function() {
+        selectedColor = hexToRgbArray(this.value).concat(255); // Adding alpha value
+        colorPickerWrapper.style.backgroundColor = this.value;
+        document.querySelector('.color-box.active')?.classList.remove('active');
+        colorPickerWrapper.classList.add('active');
+        console.log(`Selected color: ${selectedColor}`);
+    });
+
     canvas.addEventListener('click', function(event) {
         const rect = canvas.getBoundingClientRect();
         const x = event.clientX - rect.left;
@@ -49,6 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function getRgbArray(color) {
         const match = color.match(/\d+/g);
         return match ? match.map(num => parseInt(num)) : [0, 0, 0, 255];
+    }
+
+    function hexToRgbArray(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : null;
     }
 
     function getColorAtPixel(imageData, x, y) {

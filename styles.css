@@ -45,7 +45,7 @@ body {
     align-items: center; 
 }
 
-.color-box {
+.color-box, .color-picker-wrapper {
     width: 30px;
     height: 30px;
     border-radius: 50%;
@@ -55,8 +55,24 @@ body {
     border: 2px solid transparent; 
 }
 
-.color-box.active {
+.color-box.active, .color-picker-wrapper.active {
     border-color: black; 
+}
+
+.color-picker-wrapper {
+    position: relative;
+    background-color: white;
+}
+
+#color-picker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    border-radius: 50%; /* Keep the border radius to maintain the round shape */
 }
 
 canvas {
