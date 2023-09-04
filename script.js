@@ -4,11 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageUpload = document.getElementById('imageUpload');
     const colorBoxes = document.querySelectorAll('.color-box');
 
+    let selectedColor = "rgba(0, 0, 0, 255)";
+
     imageUpload.addEventListener('change', function() {
         const file = this.files[0];
         if (file) {
             const reader = new FileReader();
-
             reader.onload = function(event) {
                 const img = new Image();
                 img.onload = function() {
@@ -23,18 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    let selectedColor = 'rgb(0, 0, 0)';
-
-    function setColor(color) {
-        document.querySelector('.color-box.active')?.classList.remove('active');
-        selectedColor = color;
-        console.log(`Selected color: ${color}`);
-        [...document.querySelectorAll('.color-box')].find(box => box.style.backgroundColor === color).classList.add('active');
-    }
-
     colorBoxes.forEach(box => {
         box.addEventListener('click', function() {
-            setColor(this.style.backgroundColor);
+            document.querySelector('.color-box.active')?.classList.remove('active');
+            this.classList.add('active');
+            selectedColor = getRgbString(this.style.backgroundColor);
+            console.log(`Selected color: ${selectedColor}`);
         });
     });
 
@@ -60,12 +55,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return match ? [parseInt(match[0]), parseInt(match[1]), parseInt(match[2]), 255] : [0, 0, 0, 255];
     }
 
+    function getRgbString(color) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = color;
+        return ctx.fillStyle;
+    }
+
     function getColorAtPixel(imageData, x, y) {
         const { width, data } = imageData;
         const intX = Math.floor(x);
         const intY = Math.floor(y);
         const index = (intY * width + intX) * 4;
-
         return [data[index], data[index + 1], data[index + 2], data[index + 3]];
     }
 
@@ -93,20 +94,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const [currentX, currentY] = pixels.pop();
             const currentIndex = (Math.floor(currentY) * canvas.width + Math.floor(currentX)) * 4;
 
-            if (visited.has(currentIndex)) continue;
+            if (
+                currentX < 0 || currentY < 0 ||
+                currentX >= canvas.width || currentY >= canvas.height ||
+                visited.has(currentIndex) ||
+                !colorsMatch(getColorAtPixel(imageData, currentX, currentY), targetColor)
+            ) {
+                continue;
+            }
+
+            data[currentIndex] = newColor[0];
+            data[currentIndex + 1] = newColor[1];
+            data[currentIndex + 2] = newColor[2];
+            data[currentIndex + 3] = newColor[3];
+
             visited.add(currentIndex);
 
-            if (colorsMatch(getColorAtPixel(imageData, currentX, currentY), targetColor)) {
-                data[currentIndex] = newColor[0];
-                data[currentIndex + 1] = newColor[1];
-                data[currentIndex + 2] = newColor[2];
-                data[currentIndex + 3] = newColor[3];
-
-                pixels.push([currentX + 1, currentY]);
-                pixels.push([currentX - 1, currentY]);
-                pixels.push([currentX, currentY + 1]);
-                pixels.push([currentX, currentY - 1]);
-            }
+            pixels.push([currentX - 1, currentY]);
+            pixels.push([currentX + 1, currentY]);
+            pixels.push([currentX, currentY - 1]);
+            pixels.push([currentX, currentY + 1]);
         }
 
         ctx.putImageData(imageData, 0, 0);
