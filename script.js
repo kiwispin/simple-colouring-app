@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('.color-box.active')?.classList.remove('active');
             this.classList.add('active');
             selectedColor = getRgbArray(this.style.backgroundColor);
+            console.log(`Selected color: ${selectedColor}`);
         });
     });
 
@@ -47,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getRgbArray(color) {
         const match = color.match(/\d+/g);
-        return match ? match.map(num => parseInt(num)) : [0, 0, 0, 255];
+        return match ? match.map(num => parseInt(num)).concat(255) : [0, 0, 0, 255];
     }
 
     function getColorAtPixel(imageData, x, y) {
@@ -59,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return [data[index], data[index + 1], data[index + 2], data[index + 3]];
     }
 
-    function colorsMatch(a, b, tolerance = 10) {
+    function colorsMatch(a, b, tolerance = 0) {
         for (let i = 0; i < a.length; i++) {
             if (Math.abs(a[i] - b[i]) > tolerance) return false;
         }
@@ -67,38 +68,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function floodFill(canvas, x, y, newColor, targetColor, imageData) {
-        const ctx = canvas.getContext('2d');
-        const data = imageData.data;
-        
-        if (colorsMatch(targetColor, newColor)) {
-            return;
-        }
-
-        const pixels = [[x, y]];
+        const stack = [[x, y]];
+        const { width, height } = canvas;
+        const { data } = imageData;
+        const target = targetColor.slice(0, 3);
+        const replacement = newColor.slice(0, 3);
         const visited = new Set();
 
-        while (pixels.length) {
-            const [currentX, currentY] = pixels.pop();
-            const currentIndex = (Math.floor(currentY) * canvas.width + Math.floor(currentX)) * 4;
+        while (stack.length) {
+            const [currX, currY] = stack.pop();
+            const index = (Math.floor(currY) * width + Math.floor(currX)) * 4;
 
-            if (visited.has(currentIndex)) continue;
-            visited.add(currentIndex);
+            if (visited.has(index)) continue;
+            visited.add(index);
 
-            const currentColor = getColorAtPixel(imageData, currentX, currentY);
+            if (colorsMatch(getColorAtPixel(imageData, currX, currY).slice(0, 3), target)) {
+                data[index] = replacement[0];
+                data[index + 1] = replacement[1];
+                data[index + 2] = replacement[2];
 
-            if (colorsMatch(currentColor, targetColor)) {
-                data[currentIndex] = newColor[0];
-                data[currentIndex + 1] = newColor[1];
-                data[currentIndex + 2] = newColor[2];
-                data[currentIndex + 3] = newColor[3];
-
-                if (currentX > 0 && !visited.has((currentY * canvas.width + (currentX - 1)) * 4)) pixels.push([currentX - 1, currentY]);
-                if (currentX < canvas.width - 1 && !visited.has((currentY * canvas.width + (currentX + 1)) * 4)) pixels.push([currentX + 1, currentY]);
-                if (currentY > 0 && !visited.has(((currentY - 1) * canvas.width + currentX) * 4)) pixels.push([currentX, currentY - 1]);
-                if (currentY < canvas.height - 1 && !visited.has(((currentY + 1) * canvas.width + currentX) * 4)) pixels.push([currentX, currentY + 1]);
+                if (currX > 0) stack.push([currX - 1, currY]);
+                if (currX < width - 1) stack.push([currX + 1, currY]);
+                if (currY > 0) stack.push([currX, currY - 1]);
+                if (currY < height - 1) stack.push([currX, currY + 1]);
             }
         }
-
         ctx.putImageData(imageData, 0, 0);
     }
 });
