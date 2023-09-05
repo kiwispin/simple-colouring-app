@@ -4,7 +4,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: start; 
+    justify-content: start;
     height: 100vh;
     padding-top: 20px;
 }
@@ -12,8 +12,8 @@ body {
 .toolbar {
     display: flex;
     align-items: center;
-    justify-content: center; 
-    gap: 10px; 
+    justify-content: center;
+    gap: 10px;
     margin-bottom: 20px;
 }
 
@@ -42,7 +42,7 @@ body {
 
 #color-container {
     display: flex;
-    align-items: center; 
+    align-items: center;
 }
 
 .color-box, .color-picker-wrapper {
@@ -52,16 +52,17 @@ body {
     margin: 0 5px;
     cursor: pointer;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    border: 2px solid transparent; 
+    border: 2px solid transparent;
 }
 
 .color-box.active, .color-picker-wrapper.active {
-    border-color: black; 
+    border-color: black;
 }
 
 .color-picker-wrapper {
     position: relative;
-    background-color: white;
+    background: linear-gradient(135deg, red 25%, blue 25%, blue 50%, green 50%, green 75%, yellow 75%);
+    border-radius: 50%;
 }
 
 #color-picker {
@@ -72,7 +73,7 @@ body {
     height: 100%;
     opacity: 0;
     cursor: pointer;
-    border-radius: 50%; /* Keep the border radius to maintain the round shape */
+    border-radius: 50%; /* Maintain the border radius to maintain the round shape */
 }
 
 canvas {
